@@ -1,0 +1,47 @@
+{
+    "name": "lennyrpg",
+    "description": "LennyRPG - Test your product knowledge with a retro-style RPG game featuring 283 legendary guests from Lenny's Podcast by Lenny Rachitsky. Battle product leaders, answer PM questions, and level up your skills!",
+    "version": "1.0.0",
+    "type": "module",
+    "author": {
+        "name": "Ben Shih",
+        "url": "https://benshih.design/",
+        "email": "ben@benshih.design"
+    },
+    "homepage": "https://www.lennyrpg.fun",
+    "keywords": [
+        "lenny-rachitsky",
+        "lennys-podcast",
+        "product-management",
+        "pm-game",
+        "product-knowledge",
+        "educational-game",
+        "rpg",
+        "phaser",
+        "phaser3",
+        "vue",
+        "trivia-game",
+        "product-leaders",
+        "startup-game",
+        "tech-podcast",
+        "retro-game"
+    ],
+    "scripts": {
+        "dev": "vite --config vite/config.dev.mjs",
+        "build": "vite build --config vite/config.prod.mjs"
+    },
+    "dependencies": {
+        "@iconify/icons-pixelarticons": "^1.2.5",
+        "@iconify/vue": "^5.0.0",
+        "@supabase/supabase-js": "^2.49.1",
+        "html2canvas": "^1.4.1",
+        "phaser": "^3.90.0",
+        "vue": "3.5.13",
+        "webfontloader": "^1.6.28"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^5.2.2",
+        "terser": "^5.31.0",
+        "vite": "^6.3.1"
+    }
+}
