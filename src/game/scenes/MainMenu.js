@@ -139,7 +139,7 @@ export class MainMenu extends Scene
             strokeThickness: 4
         }).setOrigin(0.5);
 
-        this.add.text(this.scale.width / 2, 280, 'Угадывай мысли гостей. Побеждай в боях. Лови всех.', {
+        this.add.text(this.scale.width / 2, 280, 'Учись у сильных. Побеждай в боях. Лови всех.', {
             fontFamily: '"Press Start 2P"',
             fontSize: '13px',
             color: '#FFFFFF',
