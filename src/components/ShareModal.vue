@@ -94,7 +94,7 @@
 
         <!-- Footer -->
         <div class="card-footer">
-          <p class="footer-text">Играй в СоколовскийРПГ на srpg.meatbags.ru</p>
+          <p class="footer-text">Играй в СоколовскийРПГ на srpg.yakovtsev.ru</p>
         </div>
       </div>
 
@@ -195,7 +195,7 @@ ${guestsLine ? '\n' + guestsLine : ''}
 
 Слушаешь Подкаст Соколовского? Тогда зайдёт. Проверь, что усвоил, и поймай всех!
 
-Играй: srpg.meatbags.ru`;
+Играй: srpg.yakovtsev.ru`;
 
   const encodedText = encodeURIComponent(shareText);
   const linkedInUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodedText}`;
