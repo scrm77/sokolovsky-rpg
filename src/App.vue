@@ -926,6 +926,7 @@ onUnmounted(() => {
 
     <TutorialModal
       :show="showTutorial"
+      :isMobile="isMobile"
       @close="handleCloseTutorial"
     />
 

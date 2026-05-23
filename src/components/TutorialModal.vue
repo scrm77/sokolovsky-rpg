@@ -10,32 +10,32 @@
         <div class="instruction-item">
           <div class="instruction-number">1</div>
           <div class="instruction-text">
-            <h3>Двигайся стрелками или WASD</h3>
-            <p>Ходи по карте, чтобы находить гостей подкаста.</p>
+            <h3>{{ isMobile ? 'Ходи джойстиком слева' : 'Двигайся стрелками или WASD' }}</h3>
+            <p>Гуляй по карте и находи гостей подкаста.</p>
           </div>
         </div>
 
         <div class="instruction-item">
           <div class="instruction-number">2</div>
           <div class="instruction-text">
-            <h3>Нажми Пробел рядом с гостем, чтобы начать бой</h3>
-            <p>В каждом бою 3 вопроса. Отвечай правильно, чтобы поймать гостя.</p>
+            <h3>{{ isMobile ? 'Подойди к гостю и нажми «А», чтобы начать бой' : 'Нажми Пробел рядом с гостем, чтобы начать бой' }}</h3>
+            <p>В каждом бою несколько вопросов. Отвечай правильно, чтобы поймать гостя.</p>
           </div>
         </div>
 
         <div class="instruction-item">
           <div class="instruction-number">3</div>
           <div class="instruction-text">
-            <h3>Зарабатывай XP, чтобы повышать уровень</h3>
-            <p>Повышение уровня открывает новых гостей и новые карты.</p>
+            <h3>Угадывай инсайты гостей</h3>
+            <p>Вопросы не на факты, а на их подходы и принципы. Лови пользу себе.</p>
           </div>
         </div>
 
         <div class="instruction-item">
           <div class="instruction-number">4</div>
           <div class="instruction-text">
-            <h3>Хвастайся пойманными гостями</h3>
-            <p>Нажми C, чтобы открыть Коллекцию, и делись результатами когда захочешь.</p>
+            <h3>Поймай всех 10 гостей</h3>
+            <p>{{ isMobile ? 'Коллекция и «Поделиться» — в меню ☰ вверху справа.' : 'Нажми C, чтобы открыть Коллекцию, и делись результатами когда захочешь.' }}</p>
           </div>
         </div>
       </div>
@@ -56,6 +56,10 @@ import gamepad from '@iconify/icons-pixelarticons/gamepad';
 import bullseye from '@iconify/icons-pixelarticons/bullseye';
 const props = defineProps({
   show: {
+    type: Boolean,
+    default: false
+  },
+  isMobile: {
     type: Boolean,
     default: false
   }
@@ -99,11 +103,18 @@ function handleClose() {
   padding: 32px;
   max-width: 600px;
   width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   color: white;
   font-family: 'Press Start 2P', monospace, sans-serif;
 }
+
+.tutorial-header { flex-shrink: 0; }
+.start-button { flex-shrink: 0; }
+.skip-hint { flex-shrink: 0; }
 
 @keyframes slideUp {
   from {
@@ -157,6 +168,9 @@ function handleClose() {
   flex-direction: column;
   gap: 24px;
   margin-bottom: 32px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .instruction-item {
@@ -277,6 +291,62 @@ function handleClose() {
   .start-button {
     font-size: 12px;
     padding: 14px;
+  }
+}
+
+/* Short viewports (landscape phones): compress so the button stays reachable */
+@media (max-height: 520px) {
+  .tutorial-modal {
+    padding: 16px 20px;
+    max-height: 94vh;
+  }
+
+  .tutorial-header {
+    margin-bottom: 12px;
+  }
+
+  .tutorial-icon {
+    display: none;
+  }
+
+  .tutorial-title {
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .tutorial-content {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .instruction-item {
+    padding: 8px 10px;
+    gap: 10px;
+  }
+
+  .instruction-number {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+
+  .instruction-text h3 {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+
+  .instruction-text p {
+    font-size: 8px;
+    line-height: 1.4;
+  }
+
+  .start-button {
+    padding: 10px;
+    font-size: 11px;
+  }
+
+  .skip-hint {
+    margin-top: 6px;
   }
 }
 </style>
