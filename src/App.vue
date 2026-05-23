@@ -648,6 +648,10 @@ onUnmounted(() => {
             <Icon class="btn-icon" :icon="bookOpen" />
             Коллекция
           </button>
+          <button class="action-btn leaderboard-btn" @click="handleOpenLeaderboard">
+            <Icon class="btn-icon" :icon="trophy" />
+            Таблица лидеров
+          </button>
           <button class="action-btn share-btn" @click="handleShareStats">
             <Icon class="btn-icon" :icon="upload" />
             Поделиться
@@ -746,6 +750,10 @@ onUnmounted(() => {
         <button class="action-btn collection-btn" @click="handleOpenCollection">
           <Icon class="btn-icon" :icon="bookOpen" />
           Коллекция
+        </button>
+        <button class="action-btn leaderboard-btn" @click="handleOpenLeaderboard">
+          <Icon class="btn-icon" :icon="trophy" />
+          Таблица лидеров
         </button>
         <button class="action-btn share-btn" @click="handleShareStats">
           <Icon class="btn-icon" :icon="upload" />
