@@ -6,6 +6,33 @@
 import { STAGE_CONFIG, STAGE_NAME_ALIASES } from './StageConfig';
 import { cleanGuestName, getGuestAvatarAssetPath } from './assets';
 
+// Cyrillic → Latin map for building stable, human-readable slugs
+const TRANSLIT = {
+  а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z',
+  и: 'i', й: 'i', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r',
+  с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch', ш: 'sh',
+  щ: 'sch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya'
+};
+
+/**
+ * Build a stable, order-independent slug ID from a guest name.
+ * E.g. "Андрей Кривенко" → "andrei-krivenko". Deterministic: the same name
+ * always yields the same ID, so reordering/adding guests never shifts IDs.
+ */
+export function slugifyName(name) {
+  const lower = (name || '').toString().toLowerCase().trim();
+  let out = '';
+  for (const ch of lower) {
+    out += Object.prototype.hasOwnProperty.call(TRANSLIT, ch) ? TRANSLIT[ch] : ch;
+  }
+  return out
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')  // strip Latin diacritics
+    .replace(/[^a-z0-9]+/g, '-')      // non-alphanumerics → dashes
+    .replace(/^-+|-+$/g, '')           // trim dashes
+    || 'guest';
+}
+
 class GuestDataManager {
   constructor() {
     this.allGuests = [];
@@ -19,13 +46,14 @@ class GuestDataManager {
    */
   loadQuestionsData(questionsData) {
     const guests = [];
+    const usedIds = new Set();
 
     if (!questionsData || !questionsData.episodes) {
       console.error('Invalid questions data format');
       return guests;
     }
 
-    questionsData.episodes.forEach((episode, index) => {
+    questionsData.episodes.forEach((episode) => {
       const guestName = episode.guest || episode.title;
 
       const excludedEpisodes = new Set([
@@ -44,9 +72,19 @@ class GuestDataManager {
         return;
       }
 
+      // Stable, order-independent ID derived from the name (slug).
+      // Guarantee uniqueness in the rare case two names collide.
+      let id = slugifyName(guestName);
+      if (usedIds.has(id)) {
+        let n = 2;
+        while (usedIds.has(`${id}-${n}`)) n++;
+        id = `${id}-${n}`;
+      }
+      usedIds.add(id);
+
       // Create guest object
       const guest = {
-        id: String(index + 1).padStart(3, '0'),
+        id,
         name: guestName,
         episode: episode.title,
         episodeUrl: episode.url || '',
@@ -258,11 +296,7 @@ class GuestDataManager {
       });
     }
 
-    // Reassign IDs based on selection order
-    selected.forEach((guest, index) => {
-      guest.id = String(index + 1).padStart(3, '0');
-    });
-
+    // Keep each guest's stable slug ID (do NOT reassign by position)
     this.selectedGuests = selected;
     console.log(`Selected ${selected.length} guests: ${topGuests.length + 1} top guests (Elena first) + ${selected.length - topGuests.length - 1} random guests`);
     return selected;
