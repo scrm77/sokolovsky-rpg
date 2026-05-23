@@ -29,12 +29,20 @@
 
       <!-- Instructions footer -->
       <div class="dialog-footer">
-        <div class="instruction-text">
-          <span class="key-prompt">SPACE</span> — в бой
-          <span class="divider">•</span>
-          Уйти, чтобы отменить
+        <!-- Mobile: tappable buttons (no keyboard) -->
+        <div v-if="isMobile" class="dialog-buttons">
+          <button class="dlg-btn fight" @click="accept">⚔ В бой</button>
+          <button class="dlg-btn flee" @click="reject">Уйти</button>
         </div>
-        <div class="continue-arrow" v-if="!isTyping">▼</div>
+        <!-- Desktop: keyboard hint -->
+        <template v-else>
+          <div class="instruction-text">
+            <span class="key-prompt">SPACE</span> — в бой
+            <span class="divider">•</span>
+            Уйти, чтобы отменить
+          </div>
+          <div class="continue-arrow" v-if="!isTyping">▼</div>
+        </template>
       </div>
     </div>
   </div>
@@ -50,10 +58,19 @@ const props = defineProps({
   npcData: {
     type: Object,
     default: () => ({})
-  }
+  },
+  isMobile: Boolean
 });
 
 const emit = defineEmits(['accept', 'reject']);
+
+function accept() {
+  emit('accept');
+}
+
+function reject() {
+  emit('reject');
+}
 
 // Get guest title
 const guestTitle = computed(() => {
@@ -317,6 +334,41 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* Mobile tappable buttons */
+.dialog-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.dlg-btn {
+  flex: 1;
+  font-family: 'Press Start 2P', monospace, sans-serif;
+  font-size: 12px;
+  padding: 14px 10px;
+  border: 3px solid #000;
+  border-radius: 6px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 0 #000;
+}
+
+.dlg-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #000;
+}
+
+.dlg-btn.fight {
+  background: #5FB859;
+  color: #000;
+}
+
+.dlg-btn.flee {
+  background: #e8e8e8;
+  color: #333;
 }
 
 .key-prompt {

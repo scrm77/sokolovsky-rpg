@@ -874,6 +874,7 @@ onUnmounted(() => {
     <EncounterDialog
       :isActive="showEncounter"
       :npcData="encounterNPC || {}"
+      :isMobile="isMobile"
       @accept="handleAcceptBattle"
       @reject="handleRejectBattle"
     />
