@@ -40,7 +40,7 @@ export class Overworld extends Scene
         this.totalSegments = 1;
         this.isTransitioning = false;
         this.lastLockedModalTime = 0;
-        this.enableMobileControls = false;
+        this.enableMobileControls = true;
     }
 
     init (data)
@@ -306,8 +306,11 @@ export class Overworld extends Scene
         this.cursors = this.input.keyboard.createCursorKeys();
         this.keys = this.input.keyboard.addKeys('W,A,S,D,C,SPACE,ENTER,L,J');
 
-        // Mobile touch controls (disabled)
+        // Mobile touch controls
         this.destroyMobileControls();
+        if (this.enableMobileControls) {
+            this.createMobileControls();
+        }
 
         // Initialize Music Manager
         this.musicManager = new MusicManager(this);
@@ -1444,7 +1447,7 @@ export class Overworld extends Scene
         this.setMobileControlsVisible(true);
 
         // Make NPCs clickable
-        this.npcs.forEach(npc => {
+        (this.npcs || []).forEach(npc => {
             if (npc.sprite && npc.sprite.setInteractive) {
                 npc.sprite.setInteractive({ useHandCursor: true });
                 npc.sprite.on('pointerdown', () => {

@@ -43,6 +43,7 @@ const showShareModal = ref(false);
 const isMuted = ref(false);
 const isMobile = ref(false);
 const isPortrait = ref(false);
+const isTelegram = ref(false);
 
 // Player stats
 const playerStats = ref({
@@ -449,8 +450,29 @@ function toggleMobileMenu() {
 function updateViewportFlags() {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  isMobile.value = w <= 1024 || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
+  isMobile.value = isTelegram.value || w <= 1024 || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
   isPortrait.value = h > w;
+}
+
+// Telegram Mini App: expand to full height, theme, and prevent accidental close.
+// No-op when opened in a normal browser (window.Telegram is undefined).
+function initTelegram() {
+  const tg = window.Telegram?.WebApp;
+  if (!tg || !tg.initData && !tg.platform) return;
+  // tg.platform is set even without initData; treat presence of WebApp as Telegram
+  if (!tg.platform) return;
+  isTelegram.value = true;
+  try {
+    tg.ready();
+    tg.expand();
+    // Prevent the Mini App from closing/minimizing on swipe-down while playing
+    tg.disableVerticalSwipes?.();
+    // Match the game's dark canvas
+    tg.setBackgroundColor?.('#000000');
+    tg.setHeaderColor?.('#000000');
+  } catch (e) {
+    console.warn('Telegram WebApp init failed:', e);
+  }
 }
 
 const handleDebugKeys = (event) => {
@@ -465,6 +487,7 @@ const handleDebugKeys = (event) => {
 };
 
 onMounted(() => {
+  initTelegram();
   updateViewportFlags();
   window.addEventListener('resize', updateViewportFlags);
 
@@ -609,11 +632,14 @@ onUnmounted(() => {
   <div id="app" :class="{ 'mobile-view': isMobile, 'battle-active': showBattle }">
     <div v-if="isMobile && isPortrait" class="orientation-lock">
       <div class="orientation-card">
-        <div class="orientation-title">Лучше на компьютере</div>
+        <div class="orientation-title">{{ isTelegram ? 'Поверни телефон 🔄' : 'Лучше на компьютере' }}</div>
         <div class="orientation-subtitle">
-          СоколовскийРПГ создан для игры на компьютере. Для лучшего впечатления продолжай на компьютере.
+          {{ isTelegram
+            ? 'СоколовскийРПГ играется горизонтально. Поверни телефон в альбомный режим.'
+            : 'СоколовскийРПГ создан для игры на компьютере. Для лучшего впечатления продолжай на компьютере.' }}
         </div>
         <a
+          v-if="!isTelegram"
           class="orientation-link"
           href="https://www.youtube.com/channel/UCaR6XjSJJsLbKN3n6VYsGKw"
           target="_blank"
@@ -1556,6 +1582,16 @@ body {
     margin: 0;
     width: 100vw;
     height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-view .game-stage {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    min-height: 0;
     display: flex;
     align-items: center;
     justify-content: center;
