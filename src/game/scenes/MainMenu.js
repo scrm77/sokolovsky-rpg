@@ -161,6 +161,9 @@ export class MainMenu extends Scene
         // Create Phaser-based input for name
         this.createNameInput();
 
+        // Does the player have saved progress to continue?
+        const hasProgress = gameState.getDefeatedGuests().length > 0;
+
         // Start button - vibrant Pokemon-style
         const buttonY = 470;
         const buttonWidth = 380;
@@ -190,7 +193,7 @@ export class MainMenu extends Scene
         const newGameButton = this.add.rectangle(this.scale.width / 2, buttonY, buttonWidth, buttonHeight, 0x000000, 0)
             .setInteractive({ useHandCursor: true });
 
-        const newGameText = this.add.text(this.scale.width / 2, buttonY, 'ИГРАТЬ', {
+        const newGameText = this.add.text(this.scale.width / 2, buttonY, hasProgress ? 'ПРОДОЛЖИТЬ' : 'ИГРАТЬ', {
             fontFamily: '"Press Start 2P"',
             fontSize: '18px',
             color: '#FFFFFF',
@@ -225,6 +228,37 @@ export class MainMenu extends Scene
         newGameButton.on('pointerdown', () => {
             this.changeScene();
         });
+
+        // Secondary "start over" action — only when there is progress to wipe.
+        // Two-tap confirm (no native dialog, works inside Telegram too).
+        if (hasProgress) {
+            const resetText = this.add.text(this.scale.width / 2, buttonY + 56, 'Начать заново', {
+                fontFamily: '"Press Start 2P"',
+                fontSize: '11px',
+                color: '#9AA0A6'
+            }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+            let confirmReset = false;
+            let confirmTimer = null;
+
+            resetText.on('pointerover', () => resetText.setColor(confirmReset ? '#FF8A8A' : '#FFFFFF'));
+            resetText.on('pointerout', () => resetText.setColor(confirmReset ? '#FF6B6B' : '#9AA0A6'));
+            resetText.on('pointerdown', () => {
+                if (!confirmReset) {
+                    confirmReset = true;
+                    resetText.setText('Точно? Прогресс сотрётся — жми ещё раз');
+                    resetText.setColor('#FF6B6B');
+                    confirmTimer = this.time.delayedCall(4000, () => {
+                        confirmReset = false;
+                        resetText.setText('Начать заново');
+                        resetText.setColor('#9AA0A6');
+                    });
+                } else {
+                    if (confirmTimer) confirmTimer.remove();
+                    this.startNewGame();
+                }
+            });
+        }
 
         // Version text - properly separated below button
         this.add.text(this.scale.width / 2, 610, 'v0.5 • СДЕЛАНО НА PHASER 3', {
@@ -580,6 +614,14 @@ export class MainMenu extends Scene
             this.nameInputText.setColor(this.isInputFocused ? '#FFD700' : '#FFFFFF');
         }
         this.updateCursorPosition();
+    }
+
+    startNewGame ()
+    {
+        // Wipe saved progress, then start fresh. changeScene() re-saves the
+        // current name and emits session-started, which clears captured guests.
+        gameState.reset();
+        this.changeScene();
     }
 
     changeScene ()

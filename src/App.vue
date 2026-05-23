@@ -19,6 +19,7 @@ import TutorialModal from './components/TutorialModal.vue';
 import LeaderboardPanel from './components/LeaderboardPanel.vue';
 import { EventBus } from './game/EventBus';
 import guestDataManager from './game/GuestData';
+import gameState from './game/GameState';
 import { leaderboardService } from './services/supabase-leaderboard.js';
 import { getStageOpponents, STAGE_CONFIG, getTotalStages } from './game/StageConfig.js';
 
@@ -272,6 +273,14 @@ function handleGuestCaptured(payload) {
     saveScoreToLeaderboard();
 
   }
+}
+
+function restoreCapturedFromSave() {
+  const defeated = new Set(gameState.getDefeatedGuests());
+  collection.value.forEach((g) => {
+    g.captured = defeated.has(g.id);
+  });
+  console.log(`Restored captured state: ${defeated.size} guest(s) already caught`);
 }
 
 async function saveScoreToLeaderboard() {
@@ -611,6 +620,10 @@ onMounted(() => {
   EventBus.on('session-started', (newSessionId) => {
     sessionId.value = newSessionId;
     console.log('Session started in App.vue:', newSessionId);
+    // Restore which guests were already caught from the save (or clear them
+    // after a "New Game" reset). Mutating the reactive collection here also
+    // updates the same objects the Overworld reads, so caught guests won't respawn.
+    restoreCapturedFromSave();
   });
 });
 
