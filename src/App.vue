@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { Icon } from '@iconify/vue';
 import bookOpen from '@iconify/icons-pixelarticons/book-open';
 import trophy from '@iconify/icons-pixelarticons/trophy';
@@ -157,6 +157,11 @@ const accuracy = computed(() => {
   return total > 0 ? Math.round((playerStats.value.rightAnswers / total) * 100) : 0;
 });
 const remainingGuests = computed(() => totalGuests.value - capturedCount.value);
+
+// Финал: поймал всех гостей
+const showFinale = ref(false);
+const allCaptured = computed(() => totalGuests.value > 0 && capturedCount.value >= totalGuests.value);
+watch(allCaptured, (v) => { if (v) showFinale.value = true; });
 
 // Event handlers
 function handleStartBattle() {
@@ -616,6 +621,16 @@ onUnmounted(() => {
         >
           Послушать подкаст Соколовского →
         </a>
+      </div>
+    </div>
+    <div v-if="showFinale" class="locked-overlay" @click="showFinale = false">
+      <div class="locked-card" @click.stop>
+        <div class="locked-title">🎉 Победа!</div>
+        <div class="locked-message">Ты прошёл всех гостей в этой игре! Поздравляем.</div>
+        <div class="locked-actions">
+          <button class="locked-btn" @click="handleShareStats">Поделиться</button>
+          <button class="locked-btn" @click="showFinale = false">OK</button>
+        </div>
       </div>
     </div>
     <div v-if="showLockedModal" class="locked-overlay" @click="showLockedModal = false">
