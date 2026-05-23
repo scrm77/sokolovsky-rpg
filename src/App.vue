@@ -884,6 +884,7 @@ onUnmounted(() => {
       :battleData="battleData"
       :playerName="playerName"
       :playerStats="playerStats"
+      :isMobile="isMobile"
       @close="handleCloseBattle"
       @guest-captured="handleGuestCaptured"
       @answer-submitted="handleAnswerResult"

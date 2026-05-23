@@ -104,7 +104,8 @@
             </div>
             <div class="q-text">{{ currentQuestion.prompt }}</div>
             <div class="controls">
-              <span class="key">↑↓</span> <span class="key">ENTER</span>
+              <span v-if="isMobile">Нажми на ответ</span>
+              <template v-else><span class="key">↑↓</span> <span class="key">ENTER</span></template>
             </div>
           </div>
 
@@ -131,7 +132,7 @@
           </div>
           <p v-if="currentQuestion.explanation" class="explain-text">{{ currentQuestion.explanation }}</p>
           <div class="continue-bar">
-            <span class="key">ENTER</span> {{ currentQuestionIndex < (battleStats.totalQuestions - 1) ? 'Дальше' : 'Завершить' }} ▼
+            <span v-if="!isMobile" class="key">ENTER</span> {{ isMobile ? 'Нажми, чтобы ' : '' }}{{ currentQuestionIndex < (battleStats.totalQuestions - 1) ? (isMobile ? 'продолжить' : 'Дальше') : (isMobile ? 'завершить' : 'Завершить') }} ▼
           </div>
         </div>
       </div>
@@ -162,7 +163,8 @@ const props = defineProps({
   isActive: Boolean,
   battleData: Object,
   playerName: String,
-  playerStats: Object
+  playerStats: Object,
+  isMobile: Boolean
 });
 
 const emit = defineEmits(['close', 'guest-captured', 'answer-submitted', 'hp-changed']);
