@@ -1356,14 +1356,20 @@ export class Overworld extends Scene
         const buttonSize = 60;
         const buttonGap = 10;
         const padding = 20;
+        const radius = buttonSize / 2;
+        // The cluster spans one button + gap out from the centre in each
+        // direction. Inset the centre so the left/down buttons stay fully
+        // on-screen (previously they were clipped off the canvas edges).
+        const reach = buttonSize + buttonGap + radius; // 100
 
-        // Position in bottom-left corner
-        const startX = padding + buttonSize + 12;
-        const startY = this.scale.height - padding - buttonSize;
+        // Position in bottom-left corner, fully inside the canvas
+        const startX = padding + reach;                       // 120
+        const startY = this.scale.height - padding - reach;   // 520
 
         // Create button background circle
         const createButton = (x, y, direction, icon) => {
-            const button = this.add.circle(x, y, buttonSize / 2, 0x000000, 0.5);
+            const button = this.add.circle(x, y, buttonSize / 2, 0x000000, 0.65);
+            button.setStrokeStyle(2, 0xFFD700, 0.9);
             button.setScrollFactor(0);
             button.setDepth(1500);
             button.setInteractive({ useHandCursor: true });
@@ -1410,7 +1416,8 @@ export class Overworld extends Scene
         };
 
         // Center button for interaction
-        const centerButton = this.add.circle(startX, startY, buttonSize / 2, 0x4CAF50, 0.6);
+        const centerButton = this.add.circle(startX, startY, buttonSize / 2, 0x4CAF50, 0.85);
+        centerButton.setStrokeStyle(2, 0xFFFFFF, 0.9);
         centerButton.setScrollFactor(0);
         centerButton.setDepth(1500);
         centerButton.setInteractive({ useHandCursor: true });
