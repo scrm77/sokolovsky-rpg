@@ -1322,4 +1322,115 @@ const {
   }
 }
 
+/* ===== Landscape phones: wide & short — use horizontal layout so all
+   answers fit and nothing is clipped ===== */
+@media (max-height: 480px) and (orientation: landscape) {
+  .battle-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    transform: none;
+  }
+
+  /* Thin arena strip on top */
+  .battle-arena {
+    height: 30%;
+    padding: 6px 10px;
+  }
+
+  .opponent-avatar,
+  .player-back {
+    width: 64px;
+    height: 64px;
+  }
+
+  .opponent-hp,
+  .player-hp {
+    max-width: 200px;
+  }
+
+  .hp-display {
+    padding: 5px 8px;
+    font-size: 8px;
+  }
+
+  .hp-bar-track {
+    height: 12px;
+  }
+
+  .hp-numeric {
+    font-size: 9px;
+    margin-top: 2px;
+  }
+
+  /* Q&A gets the bottom 70% */
+  .battle-ui-panel {
+    top: 30%;
+    height: 70%;
+  }
+
+  .pokemon-battle-box {
+    padding: 10px 12px;
+  }
+
+  /* Force side-by-side: question left, answers right */
+  .battle-layout-horizontal {
+    flex-direction: row !important;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .question-section {
+    flex: 0 0 40% !important;
+    border-right: 2px solid #e0e0e0 !important;
+    border-bottom: none !important;
+    padding-right: 10px;
+    padding-bottom: 0;
+    overflow-y: auto;
+  }
+
+  .q-text {
+    flex: initial;
+    font-size: 11px !important;
+    line-height: 1.5;
+    align-items: flex-start;
+  }
+
+  /* Answers in a scrollable column on the right, from the top */
+  .answers-section {
+    flex: 1 1 60%;
+    justify-content: flex-start !important;
+    overflow-y: auto;
+    gap: 6px;
+    padding-right: 4px;
+  }
+
+  .answer-item {
+    min-height: 0 !important;
+    padding: 7px 10px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .ans-text {
+    font-size: 11px !important;
+    line-height: 1.35;
+  }
+
+  /* Feedback view also fits the short height */
+  .feedback-display {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .explain-text {
+    font-size: 10px;
+    overflow-y: auto;
+  }
+}
+
 </style>
