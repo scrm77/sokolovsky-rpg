@@ -40,7 +40,7 @@ export class Overworld extends Scene
         this.totalSegments = 1;
         this.isTransitioning = false;
         this.lastLockedModalTime = 0;
-        this.enableMobileControls = true;
+        this.enableMobileControls = false; // controls live in the DOM side-zones now
     }
 
     init (data)
@@ -311,6 +311,22 @@ export class Overworld extends Scene
         if (this.enableMobileControls) {
             this.createMobileControls();
         }
+
+        // DOM side-zone controls drive movement/interaction via EventBus
+        this._onMobileMove = (dir) => {
+            this.mobileDirection = dir || null;
+            if (dir) this.lastMoveTime = 0;
+        };
+        this._onMobileInteract = () => {
+            this.handleInteraction();
+        };
+        EventBus.on('mobile-move', this._onMobileMove);
+        EventBus.on('mobile-interact', this._onMobileInteract);
+        this.events.once('shutdown', () => {
+            EventBus.off('mobile-move', this._onMobileMove);
+            EventBus.off('mobile-interact', this._onMobileInteract);
+            this.mobileDirection = null;
+        });
 
         // Initialize Music Manager
         this.musicManager = new MusicManager(this);

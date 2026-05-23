@@ -17,6 +17,7 @@ import LevelComplete from './components/LevelComplete.vue';
 import GameOver from './components/GameOver.vue';
 import TutorialModal from './components/TutorialModal.vue';
 import LeaderboardPanel from './components/LeaderboardPanel.vue';
+import MobileControls from './components/MobileControls.vue';
 import { EventBus } from './game/EventBus';
 import guestDataManager from './game/GuestData';
 import gameState from './game/GameState';
@@ -690,6 +691,9 @@ onUnmounted(() => {
     >
       ☰
     </button>
+    <MobileControls
+      v-if="isMobile && currentSceneName === 'Overworld' && !showBattle && !showTutorial && !showEncounter && !showMobileMenu"
+    />
     <div v-if="showMobileMenu" class="mobile-menu-overlay" @click="toggleMobileMenu"></div>
     <div v-if="showMobileMenu" class="mobile-menu-panel">
       <div class="mobile-menu-header">
