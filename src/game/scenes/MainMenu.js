@@ -359,7 +359,16 @@ export class MainMenu extends Scene
 
         // Create input text
         const savedName = gameState.getPlayerName();
-        const initialText = (savedName && savedName !== 'Player') ? savedName : '';
+        let initialText = (savedName && savedName !== 'Player') ? savedName : '';
+        // In a Telegram Mini App we know the user's name — prefill it so no
+        // keyboard is required (just tap Play). They can still edit it.
+        if (!initialText) {
+            const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+            const raw = (tgUser?.first_name || tgUser?.username || '').toString();
+            if (raw) {
+                initialText = raw.toUpperCase().replace(/[^A-ZА-ЯЁ0-9 \-]/g, '').trim().slice(0, 15);
+            }
+        }
         this.playerName = initialText;
 
         this.nameInputText = this.add.text(inputX, inputY, initialText || 'ТРЕНЕР', {
@@ -477,46 +486,56 @@ export class MainMenu extends Scene
 
     createAndFocusMobileInput ()
     {
-        // Remove any existing mobile input
-        const existingInput = document.getElementById('mobile-name-input');
-        if (existingInput) {
-            existingInput.remove();
+        let mobileInput = document.getElementById('mobile-name-input');
+        if (!mobileInput) {
+            mobileInput = document.createElement('input');
+            mobileInput.id = 'mobile-name-input';
+            mobileInput.type = 'text';
+            mobileInput.maxLength = 15;
+            mobileInput.setAttribute('autocomplete', 'off');
+            mobileInput.setAttribute('autocorrect', 'off');
+            mobileInput.setAttribute('autocapitalize', 'characters');
+            // iOS won't open the keyboard for a display:none / fully off-screen
+            // input. Keep it on-screen but visually invisible, and 16px font so
+            // iOS doesn't zoom the page.
+            Object.assign(mobileInput.style, {
+                position: 'fixed',
+                bottom: '0',
+                left: '0',
+                width: '1px',
+                height: '1px',
+                fontSize: '16px',
+                opacity: '0.01',
+                border: '0',
+                padding: '0',
+                margin: '0',
+                background: 'transparent',
+                color: 'transparent',
+                caretColor: 'transparent',
+                zIndex: '1'
+            });
+            document.body.appendChild(mobileInput);
+
+            mobileInput.addEventListener('input', (e) => {
+                const value = e.target.value.toUpperCase().replace(/[^A-ZА-ЯЁ0-9 \-]/g, '');
+                this.playerName = value;
+                this.updateInputText();
+                if (mobileInput.value !== value) mobileInput.value = value;
+            });
         }
 
-        // Create hidden input for mobile keyboard
-        const mobileInput = document.createElement('input');
-        mobileInput.id = 'mobile-name-input';
-        mobileInput.type = 'text';
         mobileInput.value = this.playerName;
-        mobileInput.maxLength = 15;
-        mobileInput.style.position = 'fixed';
-        mobileInput.style.top = '-100px';
-        mobileInput.style.left = '-100px';
-        mobileInput.style.opacity = '0';
-        mobileInput.style.pointerEvents = 'none';
-        document.body.appendChild(mobileInput);
+        // Focus SYNCHRONOUSLY inside the tap gesture — required for the mobile
+        // keyboard to appear on iOS and in the Telegram webview.
+        mobileInput.focus();
+        const len = mobileInput.value.length;
+        try { mobileInput.setSelectionRange(len, len); } catch (e) { /* noop */ }
+    }
 
-        // Handle input changes
-        mobileInput.addEventListener('input', (e) => {
-            const value = e.target.value.toUpperCase().replace(/[^A-ZА-ЯЁ0-9 \-]/g, '');
-            this.playerName = value;
-            this.updateInputText();
-            mobileInput.value = value;
-        });
-
-        // Handle blur
-        mobileInput.addEventListener('blur', () => {
-            setTimeout(() => {
-                if (document.getElementById('mobile-name-input')) {
-                    document.getElementById('mobile-name-input').remove();
-                }
-            }, 100);
-        });
-
-        // Focus the input to trigger mobile keyboard
-        setTimeout(() => {
-            mobileInput.focus();
-        }, 100);
+    removeMobileInput ()
+    {
+        const el = document.getElementById('mobile-name-input');
+        if (el) el.remove();
     }
 
     focusInput ()
@@ -626,6 +645,9 @@ export class MainMenu extends Scene
 
     changeScene ()
     {
+        // Tidy up the hidden mobile keyboard input before leaving the menu
+        this.removeMobileInput();
+
         // Get player name (already stored in this.playerName)
         this.playerName = this.playerName.trim() || 'Player';
 
