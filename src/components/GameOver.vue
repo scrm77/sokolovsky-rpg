@@ -141,14 +141,24 @@ function handleShare() {
   padding: 36px 32px;
   max-width: 520px;
   width: 90%;
+  max-height: 92vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   border: 3px solid #FFD700;
   box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.4);
   animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  overflow: hidden;
   color: white;
   text-align: center;
   font-family: 'Press Start 2P', monospace;
+}
+
+/* Short viewports (landscape phones): keep buttons reachable */
+@media (max-height: 520px) {
+  .game-over-modal {
+    padding: 16px 20px;
+    max-height: 94vh;
+  }
 }
 
 @keyframes slideUp {

@@ -107,11 +107,13 @@ function handleContinue() {
   padding: 32px 28px;
   max-width: 520px;
   width: 90%;
+  max-height: 92vh;
   box-shadow:
     0 0 30px rgba(255, 215, 0, 0.5),
     inset 0 0 20px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   color: white;
   text-align: left;
   font-family: 'Press Start 2P', monospace, sans-serif;
